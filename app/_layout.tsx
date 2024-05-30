@@ -1,12 +1,21 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import {
+  DarkTheme,
+  DefaultTheme,
+  ThemeProvider,
+  useTheme,
+} from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { useColorScheme } from '@/components/useColorScheme';
+import ColorSchemeProvider, {
+  useColorScheme,
+} from '@/components/useColorScheme';
+import { StatusBar, Text } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -42,16 +51,37 @@ export default function RootLayout() {
     return null;
   }
 
-  return <RootLayoutNav />;
+  return (
+    <ColorSchemeProvider>
+      <GestureHandlerRootView>
+        <RootLayoutNav />
+      </GestureHandlerRootView>
+    </ColorSchemeProvider>
+  );
 }
 
 function RootLayoutNav() {
-  const colorScheme = useColorScheme();
-
+  const { theme } = useColorScheme();
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    <ThemeProvider value={theme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack
+        screenOptions={{
+          headerLargeTitle: true,
+          headerTransparent: true,
+          headerBlurEffect: 'prominent',
+          headerSearchBarOptions: {
+            placeholder: 'Search',
+            hideWhenScrolling: true,
+            obscureBackground: false,
+          },
+          // headerRight: () => <Text>asdasd</Text>,
+          // headerLeft: () => <Text>asdasd</Text>,
+        }}
+      >
+        <Stack.Screen
+          name="(tabs)"
+          options={{ headerShown: true, title: 'Tab One' }}
+        />
         <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
